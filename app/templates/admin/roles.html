@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="admin-card">
+    <div class="layui-row" style="margin-bottom: 16px;">
+        <div class="layui-col-md8">
+            <div class="layui-inline">
+                <input type="text" id="search-keyword" placeholder="搜索角色..." class="layui-input" style="width: 240px;">
+            </div>
+            <button class="layui-btn layui-btn-normal" id="search-btn" style="background:#7C3AED;border-color:#7C3AED;">
+                <i class="fas fa-search"></i> 搜索
+            </button>
+        </div>
+        <div class="layui-col-md4" style="text-align: right;">
+            <button class="layui-btn" id="add-btn" style="background:#7C3AED;border-color:#7C3AED;">
+                <i class="fas fa-plus"></i> 新增角色
+            </button>
+        </div>
+    </div>
+    <table id="role-table" lay-filter="roleTable"></table>
+</div>
+
+<div id="role-form-dialog" style="display:none;padding:20px;">
+    <form class="layui-form" id="role-form" lay-filter="roleForm">
+        <input type="hidden" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入角色名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="code" required lay-verify="required" placeholder="请输入角色编码（唯一）" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <input type="text" name="description" placeholder="角色描述" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" lay-skin="switch" lay-text="启用|禁用" value="1" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单权限</label>
+            <div class="layui-input-block" id="menu-tree" style="padding-top:9px;max-height:200px;overflow-y:auto;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">功能权限</label>
+            <div class="layui-input-block" id="func-tree" style="padding-top:9px;max-height:200px;overflow-y:auto;">
+            </div>
+        </div>
+    </form>
+</div>
+{% end %}
+{% block script %}
+<script>
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    var $ = layui.$;
+
+    var treeData = {functions:[], menus:[], roles:[]};
+
+    function actionTpl(d){
+        var html = '<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="fas fa-edit"></i> 编辑</button> ';
+        if(d.code !== 'super_admin'){
+            html += '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="fas fa-trash"></i> 删除</button>';
+        }
+        return html;
+    }
+
+    function statusTpl(d){
+        return d.status === 1 ? '<span class="layui-badge layui-bg-green">启用</span>' : '<span class="layui-badge" style="background:#aaa;">禁用</span>';
+    }
+
+    table.render({
+        elem: '#role-table',
+        url: '/admin/api/roles',
+        page: true,
+        cols: [[
+            {field:'id', title:'ID', width:70},
+            {field:'name', title:'角色名称', width:140},
+            {field:'code', title:'角色编码', width:140},
+            {field:'description', title:'描述', width:200},
+            {field:'status', title:'状态', width:90, templet: statusTpl},
+            {field:'created_at', title:'创建时间', width:180},
+            {title:'操作', width:180, templet: actionTpl, align:'center'}
+        ]],
+        defaultToolbar: [],
+        parseData: function(res){ return {code:res.code, msg:res.msg, count:res.count, data:res.data}; }
+    });
+
+    function loadTreeData(cb){
+        $.get('/admin/api/treedata', function(res){
+            if(res.code === 0){ treeData = res.data; }
+            if(cb) cb();
+        });
+    }
+
+    function buildTreeHtml(items, parentId, selectedIds, prefix){
+        var html = '';
+        layui.each(items, function(i, item){
+            if(item.parent_id === parentId){
+                var checked = selectedIds && selectedIds.indexOf(item.id) !== -1 ? 'checked' : '';
+                html += '<div style="margin-left:'+(prefix?20:0)+'px;padding:2px 0;">';
+                html += '<input type="checkbox" name="'+prefix+'_ids" value="'+item.id+'" '+checked+' lay-skin="primary" title="'+item.name+'">';
+                html += '</div>';
+                html += buildTreeHtml(items, item.id, selectedIds, prefix);
+            }
+        });
+        return html;
+    }
+
+    function renderTree(selectedMenuIds, selectedFuncIds){
+        var menuHtml = buildTreeHtml(treeData.menus, 0, selectedMenuIds, 'menu');
+        var funcHtml = buildTreeHtml(treeData.functions, 0, selectedFuncIds, 'func');
+        $('#menu-tree').html(menuHtml || '<span style="color:#aaa;">暂无菜单</span>');
+        $('#func-tree').html(funcHtml || '<span style="color:#aaa;">暂无功能</span>');
+        form.render('checkbox');
+    }
+
+    loadTreeData();
+
+    $('#search-btn').click(function(){
+        table.reload('role-table', {where:{keyword:$('#search-keyword').val()}, page:{curr:1}});
+    });
+
+    function openForm(title, formData, selectedMenuIds, selectedFuncIds, submitUrl, method){
+        loadTreeData(function(){
+            form.val('roleForm', formData);
+            renderTree(selectedMenuIds, selectedFuncIds);
+            layer.open({
+                type:1, title:title, area:['550px','580px'], content:$('#role-form-dialog'),
+                btn:['保存','取消'],
+                yes:function(index){
+                    var fdata = form.val('roleForm');
+                    if(!fdata.name){ layer.msg('请输入角色名称'); return; }
+                    if(!fdata.code){ layer.msg('请输入角色编码'); return; }
+                    fdata.status = fdata.status ? 1 : 0;
+                    fdata.menu_ids = [];
+                    fdata.function_ids = [];
+                    $('#menu-tree input:checked').each(function(){ fdata.menu_ids.push(parseInt(this.value)); });
+                    $('#func-tree input:checked').each(function(){ fdata.function_ids.push(parseInt(this.value)); });
+                    $.ajax({
+                        url:submitUrl, type:method, contentType:'application/json',
+                        data:JSON.stringify(fdata),
+                        success:function(res){
+                            if(res.code===0){ layer.close(index); table.reload('role-table'); layer.msg(title+'成功',{icon:1}); }
+                            else { layer.msg(res.msg,{icon:2}); }
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    $('#add-btn').click(function(){
+        openForm('新增角色', {status:1}, [], [], '/admin/api/roles', 'POST');
+    });
+
+    table.on('tool(roleTable)', function(obj){
+        var d = obj.data;
+        if(obj.event === 'edit'){
+            openForm('编辑角色',
+                {id:d.id, name:d.name, code:d.code, description:d.description, status:d.status},
+                d.menu_ids||[], d.function_ids||[],
+                '/admin/api/roles', 'PUT');
+        } else if(obj.event === 'delete'){
+            layer.confirm('确定删除角色 "'+d.name+'" 吗？', {icon:3}, function(index){
+                layer.close(index);
+                $.ajax({
+                    url:'/admin/api/roles', type:'DELETE', contentType:'application/json',
+                    data:JSON.stringify({id:d.id}),
+                    success:function(res){
+                        if(res.code===0){ table.reload('role-table'); layer.msg('删除成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    }
+                });
+            });
+        }
+    });
+});
+</script>
+{% end %}

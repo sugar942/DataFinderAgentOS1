@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+    .data-header {
+        background: linear-gradient(135deg, #6D28D9 0%, #4C1D95 100%);
+        border-radius: 12px;
+        padding: 24px 28px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    .data-header h3 { margin: 0 0 4px 0; font-size: 18px; font-weight: 600; }
+    .data-header p { margin: 0; font-size: 13px; opacity: 0.8; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .toolbar-left { display: flex; gap: 10px; align-items: center; }
+    .toolbar-left input { width: 240px; height: 38px; border-radius: 6px; border: 1px solid #ddd; padding: 0 12px; font-size: 13px; }
+    .btn-purple { background: #7C3AED; border-color: #7C3AED; color: #fff; border-radius: 6px; height: 38px; padding: 0 18px; font-size: 13px; cursor: pointer; border: none; }
+    .btn-purple:hover { background: #6D28D9; }
+    .btn-outline { height: 38px; padding: 0 18px; font-size: 13px; cursor: pointer; border-radius: 6px; border: 1px solid #ddd; background: #fff; color: #555; }
+    .btn-outline:hover { border-color: #7C3AED; color: #7C3AED; }
+    .layui-table-view { border-radius: 8px; overflow: hidden; }
+</style>
+
+<div class="data-header">
+    <h3><i class="fas fa-database"></i> 数据源管理</h3>
+    <p>管理瞭望系统的采集数据源（瞭源），支持增删改查及启用/禁用</p>
+</div>
+
+<div class="admin-card">
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <input type="text" id="search-keyword" placeholder="搜索名称/编码...">
+            <button class="btn-purple" id="search-btn"><i class="fas fa-search"></i> 搜索</button>
+        </div>
+        <button class="btn-purple" id="add-btn"><i class="fas fa-plus"></i> 新增瞭源</button>
+    </div>
+    <table id="source-table" lay-filter="sourceTable"></table>
+</div>
+
+<div id="source-form-dialog" style="display:none;padding:20px;">
+    <form class="layui-form" id="source-form" lay-filter="sourceForm">
+        <input type="hidden" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="瞭源名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="code" required lay-verify="required" placeholder="唯一编码，如 baidu_news" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <select name="source_type">
+                    <option value="web">Web 网页</option>
+                    <option value="rss">RSS 订阅</option>
+                    <option value="api">API 接口</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">请求 URL</label>
+            <div class="layui-input-block">
+                <input type="text" name="base_url" placeholder="例如：https://www.baidu.com/s" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">URL 参数</label>
+            <div class="layui-input-block">
+                <textarea name="params" placeholder='JSON格式，支持占位符 {keyword} 和 {pn}，例如：{"rtt":"1","bsst":"1","cl":"2","tn":"news","word":"{keyword}","pn":"{pn}"}' class="layui-textarea" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">请求头</label>
+            <div class="layui-input-block">
+                <textarea name="request_headers" placeholder='JSON格式 RequestHeaders，例如：{"User-Agent":"Mozilla/5.0 ...","Cookie":"..."}' class="layui-textarea" rows="4"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <textarea name="description" placeholder="瞭源描述" class="layui-textarea" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" name="sort" placeholder="排序号（越小越靠前）" class="layui-input" value="0">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" lay-skin="switch" lay-text="启用|禁用" value="1" checked>
+            </div>
+        </div>
+    </form>
+</div>
+{% end %}
+{% block script %}
+<script>
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    var $ = layui.$;
+
+    function sourceTypeTpl(d){ return d.source_type === 'rss' ? 'RSS' : (d.source_type === 'api' ? 'API' : 'Web'); }
+    function statusTpl(d){
+        return d.status === 1 ? '<span class="layui-badge layui-bg-green">启用</span>' : '<span class="layui-badge" style="background:#aaa;">禁用</span>';
+    }
+    function actionTpl(d){
+        var html = '<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="fas fa-edit"></i> 编辑</button> ';
+        html += '<button class="layui-btn layui-btn-xs '+(d.status===1?'layui-btn-warm':'layui-btn-normal')+'" lay-event="toggle">'+(d.status===1?'禁用':'启用')+'</button> ';
+        html += '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="fas fa-trash"></i> 删除</button>';
+        return html;
+    }
+
+    table.render({
+        elem: '#source-table',
+        url: '/admin/api/watch/sources',
+        page: false,
+        cols: [[
+            {field:'id', title:'ID', width:60},
+            {field:'name', title:'名称', width:200},
+            {field:'code', title:'编码', width:150},
+            {field:'source_type', title:'类型', width:80, templet: sourceTypeTpl},
+            {field:'base_url', title:'Base URL', minWidth:200},
+            {field:'status', title:'状态', width:80, templet: statusTpl, align:'center'},
+            {field:'sort', title:'排序', width:60, align:'center'},
+            {field:'created_at', title:'创建时间', width:170},
+            {title:'操作', width:200, templet: actionTpl, align:'center'}
+        ]],
+        defaultToolbar: [],
+        parseData: function(res){ return {code:res.code, msg:res.msg, count:res.data?res.data.length:0, data:res.data}; }
+    });
+
+    $('#search-btn').click(function(){
+        table.reload('source-table', {where:{keyword:$('#search-keyword').val()}});
+    });
+
+    function openForm(title, rowData, submitMethod, submitUrl){
+        form.val('sourceForm', rowData || {source_type:'web', sort:0, status:1, config:'{}', params:'{}', request_headers:'{}', description:''});
+        layer.open({
+            type:1, title:title, area:['600px','600px'], content:$('#source-form-dialog'),
+            btn:['保存','取消'],
+            yes:function(index){
+                var fdata = form.val('sourceForm');
+                if(!fdata.name){ layer.msg('请输入名称'); return; }
+                if(!fdata.code){ layer.msg('请输入编码'); return; }
+                fdata.status = fdata.status ? 1 : 0;
+                fdata.sort = parseInt(fdata.sort) || 0;
+                $.ajax({
+                    url:submitUrl, type:submitMethod, contentType:'application/json',
+                    data:JSON.stringify(fdata),
+                    success:function(res){
+                        if(res.code===0){ layer.close(index); table.reload('source-table'); layer.msg(title+'成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    }
+                });
+            }
+        });
+    }
+
+    $('#add-btn').click(function(){
+        openForm('新增瞭源', {source_type:'web', sort:0, status:1, config:'{}', params:'{}', request_headers:'{}', description:''}, 'POST', '/admin/api/watch/sources');
+    });
+
+    table.on('tool(sourceTable)', function(obj){
+        var d = obj.data;
+        if(obj.event === 'edit'){
+            openForm('编辑瞭源', d, 'PUT', '/admin/api/watch/sources');
+        } else if(obj.event === 'toggle'){
+            var newStatus = d.status === 1 ? 0 : 1;
+            $.ajax({
+                url:'/admin/api/watch/sources', type:'PUT', contentType:'application/json',
+                data:JSON.stringify({id:d.id, status:newStatus}),
+                success:function(res){
+                    if(res.code===0){ table.reload('source-table'); layer.msg('状态已更新',{icon:1}); }
+                    else { layer.msg(res.msg,{icon:2}); }
+                }
+            });
+        } else if(obj.event === 'delete'){
+            layer.confirm('确定删除瞭源 "'+d.name+'" 吗？', {icon:3}, function(index){
+                layer.close(index);
+                $.ajax({
+                    url:'/admin/api/watch/sources', type:'DELETE', contentType:'application/json',
+                    data:JSON.stringify({id:d.id}),
+                    success:function(res){
+                        if(res.code===0){ table.reload('source-table'); layer.msg('删除成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    }
+                });
+            });
+        }
+    });
+});
+</script>
+{% end %}

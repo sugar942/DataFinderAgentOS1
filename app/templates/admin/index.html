@@ -1,174 +1,218 @@
 {% extends "base.html" %}
 {% block body %}
-<div class="layui-row">
+<div class="layui-row layui-col-space15">
     <div class="layui-col-md3">
-        <div class="admin-card">
-            <div class="layui-row">
-                <div class="layui-col-md8">
-                    <h3 class="text-2xl font-bold text-gray-800">128</h3>
-                    <p class="text-gray-500 text-sm">总用户数</p>
+        <div class="admin-card" style="border-left: 4px solid #7C3AED;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 30px; font-weight: 700; color: #1a1530; margin: 0;">1,286</h3>
+                    <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">注册用户数</p>
                 </div>
-                <div class="layui-col-md4 text-right">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                        <i class="fas fa-users text-blue-500 text-xl"></i>
-                    </div>
+                <div style="width: 50px; height: 50px; background: #F3EEFC; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-users" style="font-size: 22px; color: #7C3AED;"></i>
                 </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #10B981;">
+                <i class="fas fa-arrow-up"></i> 较上月增长 12.5%
             </div>
         </div>
     </div>
     <div class="layui-col-md3">
-        <div class="admin-card">
-            <div class="layui-row">
-                <div class="layui-col-md8">
-                    <h3 class="text-2xl font-bold text-gray-800">56</h3>
-                    <p class="text-gray-500 text-sm">今日访问</p>
+        <div class="admin-card" style="border-left: 4px solid #059669;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 30px; font-weight: 700; color: #1a1530; margin: 0;">428</h3>
+                    <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">今日智能问数</p>
                 </div>
-                <div class="layui-col-md4 text-right">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                        <i class="fas fa-eye text-green-500 text-xl"></i>
-                    </div>
+                <div style="width: 50px; height: 50px; background: #ECFDF5; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-comment-dots" style="font-size: 22px; color: #059669;"></i>
                 </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #10B981;">
+                <i class="fas fa-arrow-up"></i> 较昨日增长 8.3%
             </div>
         </div>
     </div>
     <div class="layui-col-md3">
-        <div class="admin-card">
-            <div class="layui-row">
-                <div class="layui-col-md8">
-                    <h3 class="text-2xl font-bold text-gray-800">24</h3>
-                    <p class="text-gray-500 text-sm">活跃对话</p>
+        <div class="admin-card" style="border-left: 4px solid #D97706;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 30px; font-weight: 700; color: #1a1530; margin: 0;">36</h3>
+                    <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">活跃瞭望任务</p>
                 </div>
-                <div class="layui-col-md4 text-right">
-                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                        <i class="fas fa-comments text-purple-500 text-xl"></i>
-                    </div>
+                <div style="width: 50px; height: 50px; background: #FFFBEB; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-satellite-dish" style="font-size: 22px; color: #D97706;"></i>
                 </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #F59E0B;">
+                <i class="fas fa-minus"></i> 运行平稳
             </div>
         </div>
     </div>
     <div class="layui-col-md3">
-        <div class="admin-card">
-            <div class="layui-row">
-                <div class="layui-col-md8">
-                    <h3 class="text-2xl font-bold text-gray-800">8</h3>
-                    <p class="text-gray-500 text-sm">采集任务</p>
+        <div class="admin-card" style="border-left: 4px solid #DC2626;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <h3 style="font-size: 30px; font-weight: 700; color: #1a1530; margin: 0;">15</h3>
+                    <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">预警通知</p>
                 </div>
-                <div class="layui-col-md4 text-right">
-                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
-                        <i class="fas fa-download text-orange-500 text-xl"></i>
-                    </div>
+                <div style="width: 50px; height: 50px; background: #FEF2F2; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-bell" style="font-size: 22px; color: #DC2626;"></i>
                 </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 12px; color: #DC2626;">
+                <i class="fas fa-exclamation-circle"></i> 3条需立即处理
             </div>
         </div>
     </div>
 </div>
-<div class="layui-row">
+
+<div class="layui-row layui-col-space15">
     <div class="layui-col-md8">
         <div class="admin-card">
-            <div class="layui-card-header">
-                <h4 class="font-bold text-gray-800">数据概览</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                <h4 style="font-size: 15px; font-weight: 600; color: #1a1530; margin: 0;">问数趋势分析</h4>
+                <div>
+                    <span class="layui-badge" style="background: #F3EEFC; color: #7C3AED; padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-right: 6px;">今日</span>
+                    <span class="layui-badge" style="background: #f5f5f5; color: #888; padding: 4px 10px; border-radius: 4px; cursor: pointer; margin-right: 6px;">本周</span>
+                    <span class="layui-badge" style="background: #f5f5f5; color: #888; padding: 4px 10px; border-radius: 4px; cursor: pointer;">本月</span>
+                </div>
             </div>
-            <div class="layui-card-body">
-                <div id="main-chart" style="height: 300px;"></div>
-            </div>
+            <div id="chart-main" style="height: 300px;"></div>
         </div>
     </div>
     <div class="layui-col-md4">
-        <div class="admin-card">
-            <div class="layui-card-header">
-                <h4 class="font-bold text-gray-800">快速操作</h4>
-            </div>
-            <div class="layui-card-body">
-                <div class="layui-btn-group-vertical w-full">
-                    <button class="layui-btn layui-btn-primary w-full text-left">
-                        <i class="fas fa-plus-circle mr-2"></i>添加用户
-                    </button>
-                    <button class="layui-btn layui-btn-primary w-full text-left">
-                        <i class="fas fa-search mr-2"></i>查看数据
-                    </button>
-                    <button class="layui-btn layui-btn-primary w-full text-left">
-                        <i class="fas fa-refresh mr-2"></i>刷新采集
-                    </button>
-                    <button class="layui-btn layui-btn-primary w-full text-left">
-                        <i class="fas fa-chart-bar mr-2"></i>查看报表
-                    </button>
-                </div>
+        <div class="admin-card" style="margin-bottom: 15px;">
+            <h4 style="font-size: 15px; font-weight: 600; color: #1a1530; margin: 0 0 16px 0;">快捷操作</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="layui-btn layui-btn-primary" style="width:100%; text-align:left; border-radius:8px; border-color:#e8e6ef;">
+                    <i class="fas fa-plus-circle mr-2" style="color:#7C3AED;"></i>新建瞭望任务
+                </button>
+                <button class="layui-btn layui-btn-primary" style="width:100%; text-align:left; border-radius:8px; border-color:#e8e6ef;">
+                    <i class="fas fa-database mr-2" style="color:#059669;"></i>接入数据源
+                </button>
+                <button class="layui-btn layui-btn-primary" style="width:100%; text-align:left; border-radius:8px; border-color:#e8e6ef;">
+                    <i class="fas fa-file-export mr-2" style="color:#D97706;"></i>导出报表
+                </button>
             </div>
         </div>
         <div class="admin-card">
-            <div class="layui-card-header">
-                <h4 class="font-bold text-gray-800">系统状态</h4>
+            <h4 style="font-size: 15px; font-weight: 600; color: #1a1530; margin: 0 0 16px 0;">系统资源</h4>
+            <div style="margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:#888; margin-bottom:4px;">
+                    <span>CPU 使用率</span><span>42%</span>
+                </div>
+                <div style="height:6px; background:#f0edf7; border-radius:3px;">
+                    <div style="height:6px; width:42%; background:linear-gradient(90deg,#7C3AED,#A78BFA); border-radius:3px;"></div>
+                </div>
             </div>
-            <div class="layui-card-body">
-                <div class="layui-progress layui-progress-big" lay-showpercent="true">
-                    <div class="layui-progress-bar layui-bg-blue" lay-percent="60%"></div>
+            <div style="margin-bottom: 12px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:#888; margin-bottom:4px;">
+                    <span>内存使用率</span><span>58%</span>
                 </div>
-                <p class="text-gray-500 text-sm mt-2">CPU 使用率</p>
-                <div class="layui-progress layui-progress-big" lay-showpercent="true">
-                    <div class="layui-progress-bar layui-bg-green" lay-percent="45%"></div>
+                <div style="height:6px; background:#f0edf7; border-radius:3px;">
+                    <div style="height:6px; width:58%; background:linear-gradient(90deg,#059669,#34D399); border-radius:3px;"></div>
                 </div>
-                <p class="text-gray-500 text-sm mt-2">内存使用率</p>
-                <div class="layui-progress layui-progress-big" lay-showpercent="true">
-                    <div class="layui-progress-bar layui-bg-orange" lay-percent="30%"></div>
+            </div>
+            <div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:#888; margin-bottom:4px;">
+                    <span>磁盘使用率</span><span>33%</span>
                 </div>
-                <p class="text-gray-500 text-sm mt-2">磁盘使用率</p>
+                <div style="height:6px; background:#f0edf7; border-radius:3px;">
+                    <div style="height:6px; width:33%; background:linear-gradient(90deg,#D97706,#FCD34D); border-radius:3px;"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <div class="layui-row">
     <div class="layui-col-md12">
         <div class="admin-card">
-            <div class="layui-card-header">
-                <h4 class="font-bold text-gray-800">最近活动</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h4 style="font-size: 15px; font-weight: 600; color: #1a1530; margin: 0;">近期操作日志</h4>
+                <span style="font-size: 12px; color: #7C3AED; cursor: pointer;">查看全部 <i class="fas fa-chevron-right"></i></span>
             </div>
-            <div class="layui-card-body">
-                <table class="layui-table">
-                    <thead>
-                        <tr>
-                            <th>操作人</th>
-                            <th>操作类型</th>
-                            <th>操作内容</th>
-                            <th>操作时间</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>admin</td>
-                            <td><span class="layui-badge">登录</span></td>
-                            <td>管理员登录系统</td>
-                            <td>2025-01-15 10:30:00</td>
-                        </tr>
-                        <tr>
-                            <td>user001</td>
-                            <td><span class="layui-badge layui-bg-green">对话</span></td>
-                            <td>发起智能问数对话</td>
-                            <td>2025-01-15 10:25:00</td>
-                        </tr>
-                        <tr>
-                            <td>user002</td>
-                            <td><span class="layui-badge layui-bg-blue">查询</span></td>
-                            <td>查询销售报表</td>
-                            <td>2025-01-15 10:20:00</td>
-                        </tr>
-                        <tr>
-                            <td>admin</td>
-                            <td><span class="layui-badge layui-bg-orange">配置</span></td>
-                            <td>更新模型引擎配置</td>
-                            <td>2025-01-15 10:15:00</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="layui-table" lay-skin="line">
+                <thead>
+                    <tr>
+                        <th>操作人员</th>
+                        <th>操作类型</th>
+                        <th>操作详情</th>
+                        <th>IP 地址</th>
+                        <th>操作时间</th>
+                    </tr>
+                </thead>
+                <tbody id="log-tbody">
+                    <tr><td colspan="5" style="text-align:center;color:#999;">加载中...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 {% end %}
 {% block script %}
 <script>
-layui.use(['element', 'progress'], function(){
+layui.use(['element'], function(){
     var element = layui.element;
     element.init();
 });
+
+var badgeColors = {
+    '登录': '#7C3AED',
+    '登录失败': '#DC2626',
+    '登出': '#6B7280',
+    '注册': '#059669',
+    '新增': '#2563EB',
+    '编辑': '#D97706',
+    '删除': '#DC2626',
+};
+
+function getBadgeStyle(action) {
+    for (var key in badgeColors) {
+        if (action.indexOf(key) !== -1) return badgeColors[key];
+    }
+    return '#5B8FDE';
+}
+
+function loadLogs() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/admin/api/logs?limit=10', true);
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            var res = JSON.parse(xhr.responseText);
+            var tbody = document.getElementById('log-tbody');
+            if (res.code === 0 && res.data && res.data.length > 0) {
+                var html = '';
+                for (var i = 0; i < res.data.length; i++) {
+                    var log = res.data[i];
+                    html += '<tr>';
+                    html += '<td>' + escapeHtml(log.username) + '</td>';
+                    html += '<td><span class="layui-badge" style="background:' + getBadgeStyle(log.action) + ';">' + escapeHtml(log.action) + '</span></td>';
+                    html += '<td>' + escapeHtml(log.detail || '') + '</td>';
+                    html += '<td>' + escapeHtml(log.ip_address || '-') + '</td>';
+                    html += '<td>' + escapeHtml(log.created_at) + '</td>';
+                    html += '</tr>';
+                }
+                tbody.innerHTML = html;
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">暂无操作日志</td></tr>';
+            }
+        }
+    };
+    xhr.onerror = function() {
+        document.getElementById('log-tbody').innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">加载失败</td></tr>';
+    };
+    xhr.send();
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+loadLogs();
+setInterval(loadLogs, 30000);
 </script>
 {% end %}

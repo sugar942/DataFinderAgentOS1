@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="admin-card">
+    <div class="layui-row" style="margin-bottom: 16px;">
+        <div class="layui-col-md8">
+            <div class="layui-inline">
+                <input type="text" id="search-keyword" placeholder="搜索用户名..." class="layui-input" style="width: 240px;">
+            </div>
+            <button class="layui-btn layui-btn-normal" id="search-btn" style="background:#7C3AED;border-color:#7C3AED;">
+                <i class="fas fa-search"></i> 搜索
+            </button>
+        </div>
+        <div class="layui-col-md4" style="text-align: right;">
+            <button class="layui-btn" id="add-btn" style="background:#7C3AED;border-color:#7C3AED;">
+                <i class="fas fa-plus"></i> 新增管理员
+            </button>
+        </div>
+    </div>
+    <table id="user-table" lay-filter="userTable"></table>
+</div>
+
+<div id="user-form-dialog" style="display:none;padding:20px;">
+    <form class="layui-form" id="user-form" lay-filter="userForm">
+        <input type="hidden" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" required lay-verify="required" placeholder="请输入用户名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" placeholder="留空则不修改密码" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">超级管理员</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="is_super" lay-skin="switch" lay-text="是|否" value="1">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分配角色</label>
+            <div class="layui-input-block" id="role-checkboxes" style="padding-top:9px;">
+            </div>
+        </div>
+    </form>
+</div>
+{% end %}
+{% block script %}
+<script>
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    var $ = layui.$;
+
+    var allRoles = [];
+    var isEdit = false;
+
+    function actionTpl(d){
+        // 前台注册用户不支持后台编辑删除
+        if(!d.is_admin){
+            return '<span style="color:#aaa;font-size:12px;">前台用户</span>';
+        }
+        var html = '<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="fas fa-edit"></i> 编辑</button> ';
+        if(d.username !== 'root'){
+            html += '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="fas fa-trash"></i> 删除</button>';
+        }
+        return html;
+    }
+
+    function typeTpl(d){
+        if(!d.is_admin){
+            return '<span class="layui-badge" style="background:#059669;">平台用户</span>';
+        }
+        return d.is_super ? '<span class="layui-badge" style="background:#7C3AED;">超级管理员</span>' : '<span class="layui-badge" style="background:#5B8FDE;">管理员</span>';
+    }
+
+    table.render({
+        elem: '#user-table',
+        url: '/admin/api/users',
+        page: true,
+        cols: [[
+            {field:'id', title:'ID', width:70},
+            {field:'username', title:'用户名', width:140},
+            {field:'is_admin', title:'用户类型', width:130, templet: typeTpl},
+            {field:'created_at', title:'注册时间', width:180},
+            {title:'操作', width:200, templet: actionTpl, align:'center'}
+        ]],
+        defaultToolbar: [],
+        parseData: function(res){ return {code:res.code, msg:res.msg, count:res.count, data:res.data}; }
+    });
+
+    function loadRoles(){
+        $.get('/admin/api/treedata', function(res){
+            if(res.code === 0){
+                allRoles = res.data.roles || [];
+            }
+        });
+    }
+    loadRoles();
+
+    function renderRoleCheckboxes(selectedIds){
+        var html = '';
+        layui.each(allRoles, function(i, r){
+            var checked = selectedIds && selectedIds.indexOf(r.id) !== -1 ? 'checked' : '';
+            html += '<input type="checkbox" name="role_ids" value="'+r.id+'" title="'+r.name+'" '+checked+' lay-skin="primary">';
+        });
+        $('#role-checkboxes').html(html);
+        form.render('checkbox');
+    }
+
+    table.on('tool(userTable)', function(obj){
+        var d = obj.data;
+        // 前台用户不支持后台操作
+        if(!d.is_admin){
+            layer.msg('前台注册用户请在前端管理', {icon:0});
+            return;
+        }
+        if(obj.event === 'edit'){
+            isEdit = true;
+            $('#user-form')[0].reset();
+            form.val('userForm', {id:d.id, username:d.username, is_super:d.is_super?1:0});
+            $('#user-form input[name="password"]').removeAttr('required');
+            $('#user-form input[name="password"]').attr('placeholder', '留空则不修改密码');
+            renderRoleCheckboxes(d.role_ids || []);
+            layer.open({
+                type:1, title:'编辑管理员', area:['500px','420px'], content:$('#user-form-dialog'),
+                btn:['保存','取消'],
+                yes:function(index){
+                    var fdata = form.val('userForm');
+                    fdata.role_ids = [];
+                    $('#role-checkboxes input:checked').each(function(){ fdata.role_ids.push(parseInt(this.value)); });
+                    fdata.is_super = fdata.is_super ? 1 : 0;
+                    $.ajax({
+                        url:'/admin/api/users', type:'PUT', contentType:'application/json',
+                        data:JSON.stringify(fdata),
+                        success:function(res){
+                            if(res.code===0){ layer.close(index); table.reload('user-table'); layer.msg('更新成功',{icon:1}); }
+                            else { layer.msg(res.msg,{icon:2}); }
+                        },
+                        error: function(xhr){
+                            layer.msg('请求失败: ' + xhr.status, {icon:2});
+                        }
+                    });
+                }
+            });
+        } else if(obj.event === 'delete'){
+            layer.confirm('确定删除管理员 "'+d.username+'" 吗？', {icon:3}, function(index){
+                layer.close(index);
+                $.ajax({
+                    url:'/admin/api/users', type:'DELETE', contentType:'application/json',
+                    data:JSON.stringify({id:d.id}),
+                    success:function(res){
+                        if(res.code===0){ table.reload('user-table'); layer.msg('删除成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    },
+                    error: function(xhr){
+                        layer.msg('请求失败: ' + xhr.status, {icon:2});
+                    }
+                });
+            });
+        }
+    });
+
+    $('#search-btn').click(function(){
+        table.reload('user-table', {where:{keyword:$('#search-keyword').val()}, page:{curr:1}});
+    });
+
+    $('#add-btn').click(function(){
+        isEdit = false;
+        $('#user-form')[0].reset();
+        $('#user-form input[name="id"]').val('');
+        $('input[name="password"]').attr('placeholder', '请输入密码');
+        renderRoleCheckboxes([]);
+        layer.open({
+            type:1, title:'新增管理员', area:['500px','420px'], content:$('#user-form-dialog'),
+            btn:['保存','取消'],
+            yes:function(index){
+                var data = form.val('userForm');
+                if(!data.username){ layer.msg('请输入用户名'); return; }
+                if(!data.password && !isEdit){ layer.msg('请输入密码'); return; }
+                data.role_ids = [];
+                $('#role-checkboxes input:checked').each(function(){ data.role_ids.push(parseInt(this.value)); });
+                data.is_super = data.is_super ? 1 : 0;
+                $.ajax({
+                    url:'/admin/api/users', type:'POST', contentType:'application/json',
+                    data:JSON.stringify(data),
+                    success:function(res){
+                        if(res.code===0){ layer.close(index); table.reload('user-table'); layer.msg('新增成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    },
+                    error: function(xhr){
+                        layer.msg('请求失败: ' + xhr.status, {icon:2});
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% end %}

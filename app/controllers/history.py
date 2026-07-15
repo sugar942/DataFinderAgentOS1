@@ -7,4 +7,4 @@ class HistoryHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         username = self.current_user
-        self.render("history.html", title="历史记录", username=username)
+        self.render("history.html", title="查询历史", username=username)

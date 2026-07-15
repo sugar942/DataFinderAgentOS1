@@ -1,4 +1,8 @@
-"""
+"""Rebuild db.py with all tables plus conversations"""
+import os
+
+# The complete new content for db.py
+new_content = '''"""
 db.py -- SQLite database access infrastructure
 - Uses Python3 built-in sqlite3 module, no third-party deps
 - Centralized DB path, connection creation, row_factory config
@@ -405,9 +409,9 @@ def init_db():
                 "Accept-Language": "zh-CN,zh;q=0.9",
                 "Cache-Control": "no-cache",
                 "Host": "www.baidu.com",
-                "sec-ch-ua": "\"Not)A;Brand\";v=\"8\", \"Chromium\";v=\"138\"",
+                "sec-ch-ua": "\\"Not)A;Brand\\";v=\\"8\\", \\"Chromium\\";v=\\"138\\"",
                 "sec-ch-ua-mobile": "?0",
-                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-ch-ua-platform": "\\"Windows\\"",
             }, ensure_ascii=False)
             baidu_news_params = json.dumps({
                 "rtt": "1", "bsst": "1", "cl": "2", "tn": "news",
@@ -464,3 +468,9 @@ def init_db():
                 "INSERT INTO admins (username, password_hash, salt, is_super) VALUES (?,?,?,?)",
                 ("root", password_hash, salt.hex(), 1)
             )
+'''
+
+db_path = os.path.join(os.path.dirname(__file__) or '.', 'app', 'models', 'db.py')
+with open(db_path, 'w', encoding='utf-8') as f:
+    f.write(new_content)
+print('db.py rebuilt successfully')

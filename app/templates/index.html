@@ -1,15 +1,47 @@
 {% extends "base.html" %}
 {% block body %}
-<div>
-    <h2>用户首页</h2>
-    <form method="post" action="??">
-        {% module xsrf_form_html() %}
-        <button type="submit">退出</button>
-    </form>
+<div style="max-width: 900px; margin: 40px auto; padding: 30px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 20px 28px; background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);">
+        <div>
+            <h2 style="color: #1a1530; margin: 0; font-size: 20px;">智能瞭望与问数系统</h2>
+            <p style="color: #888; font-size: 13px; margin: 4px 0 0 0;">当前用户：{{ username }}</p>
+        </div>
+        <form method="post" action="/logout">
+            {% module xsrf_form_html() %}
+            <button type="submit" style="padding: 8px 22px; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; border-radius: 8px; font-size: 13px; cursor: pointer;">
+                <i class="fas fa-sign-out-alt mr-1"></i>退出登录
+            </button>
+        </form>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+        <a href="/chat" style="text-decoration: none; padding: 28px; background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: block; transition: all 0.2s;">
+            <div style="width: 42px; height: 42px; background: #F3EEFC; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                <i class="fas fa-comment-dots" style="color: #7C3AED; font-size: 18px;"></i>
+            </div>
+            <h4 style="color: #1a1530; margin: 0 0 4px 0; font-size: 15px;">智能问数</h4>
+            <p style="color: #888; font-size: 12px; margin: 0;">AI 驱动的自然语言数据查询</p>
+        </a>
+        <a href="/report" style="text-decoration: none; padding: 28px; background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: block; transition: all 0.2s;">
+            <div style="width: 42px; height: 42px; background: #ECFDF5; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                <i class="fas fa-chart-bar" style="color: #059669; font-size: 18px;"></i>
+            </div>
+            <h4 style="color: #1a1530; margin: 0 0 4px 0; font-size: 15px;">数据分析</h4>
+            <p style="color: #888; font-size: 12px; margin: 0;">多维度统计分析与可视化</p>
+        </a>
+        <a href="/history" style="text-decoration: none; padding: 28px; background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: block; transition: all 0.2s;">
+            <div style="width: 42px; height: 42px; background: #FFFBEB; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                <i class="fas fa-history" style="color: #D97706; font-size: 18px;"></i>
+            </div>
+            <h4 style="color: #1a1530; margin: 0 0 4px 0; font-size: 15px;">历史记录</h4>
+            <p style="color: #888; font-size: 12px; margin: 0;">查询历史与对话回顾</p>
+        </a>
+        <a href="/export" style="text-decoration: none; padding: 28px; background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); display: block; transition: all 0.2s;">
+            <div style="width: 42px; height: 42px; background: #EFF6FF; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                <i class="fas fa-file-export" style="color: #2563EB; font-size: 18px;"></i>
+            </div>
+            <h4 style="color: #1a1530; margin: 0 0 4px 0; font-size: 15px;">报告导出</h4>
+            <p style="color: #888; font-size: 12px; margin: 0;">分析报告生成与下载</p>
+        </a>
+    </div>
 </div>
-
-<div>
-    当前登录用户：{{ username }}
-</div>
-
 {% end %}

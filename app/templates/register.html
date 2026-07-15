@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <i class="fas fa-user-plus"></i>
+            <h2>创建账号</h2>
+            <p>注册智能瞭望与问数系统账号</p>
+        </div>
+        {% if error %}
+        <div class="auth-error">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% end %}
+        <form method="post" action="?">
+            {% module xsrf_form_html() %}
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-user me-1"></i> 用户名</label>
+                <input type="text" name="username" class="form-control" placeholder="请输入用户名" required autocomplete="username">
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-lock me-1"></i> 密码</label>
+                <input type="password" name="password" class="form-control" placeholder="请输入密码" required autocomplete="new-password">
+            </div>
+            <div class="mb-3">
+                <label class="form-label"><i class="fas fa-check-circle me-1"></i> 确认密码</label>
+                <input type="password" name="confirm_password" class="form-control" placeholder="请再次输入密码" required autocomplete="new-password">
+            </div>
+            <button type="submit" class="auth-btn">注 册</button>
+        </form>
+        <div class="auth-link">
+            已有账号？<a href="/">返回登录</a>
+        </div>
+    </div>
+</div>
+{% end %}

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="admin-card">
+    <div class="layui-row" style="margin-bottom: 16px;">
+        <div class="layui-col-md12" style="text-align: right;">
+            <button class="layui-btn" id="add-btn" style="background:#7C3AED;border-color:#7C3AED;">
+                <i class="fas fa-plus"></i> 新增功能
+            </button>
+        </div>
+    </div>
+    <table id="func-table" lay-filter="funcTable"></table>
+</div>
+
+<div id="func-form-dialog" style="display:none;padding:20px;">
+    <form class="layui-form" id="func-form" lay-filter="funcForm">
+        <input type="hidden" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">功能名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入功能名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">功能编码</label>
+            <div class="layui-input-block">
+                <input type="text" name="code" required lay-verify="required" placeholder="如 user:list" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">父级功能</label>
+            <div class="layui-input-block">
+                <select name="parent_id" lay-search>
+                    <option value="0">顶级功能</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">URL 路径</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" placeholder="/admin/api/users" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">请求方法</label>
+            <div class="layui-input-block">
+                <select name="method">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-block">
+                <select name="type">
+                    <option value="menu">菜单</option>
+                    <option value="api">API</option>
+                    <option value="button">按钮</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" name="sort" value="0" class="layui-input" style="width:100px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" lay-skin="switch" lay-text="启用|禁用" value="1" checked>
+            </div>
+        </div>
+    </form>
+</div>
+{% end %}
+{% block script %}
+<script>
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    var $ = layui.$;
+
+    var allFuncs = [];
+
+    function actionTpl(d){
+        return '<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="fas fa-edit"></i> 编辑</button> ' +
+               '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="fas fa-trash"></i> 删除</button>';
+    }
+
+    function typeTpl(d){
+        if(d.type === 'menu') return '<span class="layui-badge" style="background:#7C3AED;">菜单</span>';
+        if(d.type === 'api') return '<span class="layui-badge layui-bg-green">API</span>';
+        return '<span class="layui-badge layui-bg-orange">按钮</span>';
+    }
+
+    function statusTpl(d){
+        return d.status === 1 ? '<span class="layui-badge layui-bg-green">启用</span>' : '<span class="layui-badge" style="background:#aaa;">禁用</span>';
+    }
+
+    function loadAllFuncs(cb){
+        $.get('/admin/api/functions', function(res){
+            if(res.code === 0){
+                allFuncs = res.data || [];
+                var opts = '<option value="0">顶级功能</option>';
+                layui.each(allFuncs, function(i, f){
+                    opts += '<option value="'+f.id+'">'+f.name+' ('+f.code+')</option>';
+                });
+                $('select[name="parent_id"]').html(opts);
+                form.render('select');
+            }
+            if(cb) cb();
+        });
+    }
+
+    loadAllFuncs();
+
+    table.render({
+        elem: '#func-table',
+        url: '/admin/api/functions',
+        page: false,
+        cols: [[
+            {field:'id', title:'ID', width:60},
+            {field:'name', title:'功能名称', width:140},
+            {field:'code', title:'功能编码', width:150},
+            {field:'url', title:'URL', width:180},
+            {field:'method', title:'方法', width:80},
+            {field:'type', title:'类型', width:80, templet: typeTpl},
+            {field:'sort', title:'排序', width:60},
+            {field:'status', title:'状态', width:80, templet: statusTpl},
+            {title:'操作', width:180, templet: actionTpl, align:'center', fixed:'right'}
+        ]],
+        defaultToolbar: [],
+        parseData: function(res){ return {code:res.code, msg:res.msg, data:res.data}; }
+    });
+
+    $('#add-btn').click(function(){
+        loadAllFuncs(function(){
+            $('#func-form')[0].reset();
+            $('#func-form input[name="id"]').val('');
+            form.val('funcForm', {parent_id:'0', method:'GET', type:'menu', sort:0, status:1});
+            layer.open({
+                type:1, title:'新增功能', area:['500px','520px'], content:$('#func-form-dialog'),
+                btn:['保存','取消'],
+                yes:function(index){
+                    var fdata = form.val('funcForm');
+                    if(!fdata.name){ layer.msg('请输入功能名称'); return; }
+                    if(!fdata.code){ layer.msg('请输入功能编码'); return; }
+                    fdata.parent_id = parseInt(fdata.parent_id) || 0;
+                    fdata.sort = parseInt(fdata.sort) || 0;
+                    fdata.status = fdata.status ? 1 : 0;
+                    $.ajax({
+                        url:'/admin/api/functions', type:'POST', contentType:'application/json',
+                        data:JSON.stringify(fdata),
+                        success:function(res){
+                            if(res.code===0){ layer.close(index); loadAllFuncs(); table.reload('func-table'); layer.msg('新增成功',{icon:1}); }
+                            else { layer.msg(res.msg,{icon:2}); }
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    table.on('tool(funcTable)', function(obj){
+        var d = obj.data;
+        if(obj.event === 'edit'){
+            loadAllFuncs(function(){
+                form.val('funcForm', {
+                    id:d.id, name:d.name, code:d.code, url:d.url,
+                    parent_id:String(d.parent_id), method:d.method, type:d.type,
+                    sort:d.sort, status:d.status
+                });
+                layer.open({
+                    type:1, title:'编辑功能', area:['500px','520px'], content:$('#func-form-dialog'),
+                    btn:['保存','取消'],
+                    yes:function(index){
+                        var fdata = form.val('funcForm');
+                        fdata.parent_id = parseInt(fdata.parent_id) || 0;
+                        fdata.sort = parseInt(fdata.sort) || 0;
+                        fdata.status = fdata.status ? 1 : 0;
+                        $.ajax({
+                            url:'/admin/api/functions', type:'PUT', contentType:'application/json',
+                            data:JSON.stringify(fdata),
+                            success:function(res){
+                                if(res.code===0){ layer.close(index); loadAllFuncs(); table.reload('func-table'); layer.msg('更新成功',{icon:1}); }
+                                else { layer.msg(res.msg,{icon:2}); }
+                            }
+                        });
+                    }
+                });
+            });
+        } else if(obj.event === 'delete'){
+            layer.confirm('确定删除功能 "'+d.name+'" 吗？', {icon:3}, function(index){
+                layer.close(index);
+                $.ajax({
+                    url:'/admin/api/functions', type:'DELETE', contentType:'application/json',
+                    data:JSON.stringify({id:d.id}),
+                    success:function(res){
+                        if(res.code===0){ loadAllFuncs(); table.reload('func-table'); layer.msg('删除成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    }
+                });
+            });
+        }
+    });
+});
+</script>
+{% end %}

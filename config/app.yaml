@@ -10,7 +10,7 @@ app:
   version: "1.0.0"
 
 session:
-  cookie_secret: "datafinderagentos-secret-key-change-in-production"
+  cookie_secret: "datafinder-token-2025-secure"
   login_url: "/"
   xsrf_cookies: true
 

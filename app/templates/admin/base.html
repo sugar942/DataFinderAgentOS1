@@ -9,7 +9,8 @@
     <link rel="stylesheet" type="text/css" href="{{ static_url('css/base.css') }}">
     <style>
         .layui-layout-admin .layui-header {
-            background: linear-gradient(135deg, #165DFF 0%, #0E42D2 100%);
+            background: linear-gradient(135deg, #6D28D9 0%, #4C1D95 100%);
+            box-shadow: 0 2px 8px rgba(109, 40, 217, 0.15);
         }
         .layui-layout-admin .layui-logo {
             color: #fff;
@@ -17,29 +18,34 @@
             font-weight: bold;
         }
         .layui-layout-admin .layui-side {
-            background-color: #1D2129;
+            background-color: #1F1531;
         }
         .layui-nav-tree .layui-nav-item a {
-            color: #C9CDD4;
+            color: #B0A0CC;
         }
         .layui-nav-tree .layui-nav-item a:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: rgba(255,255,255,0.06);
+            color: #E2D9F3;
         }
         .layui-nav-tree .layui-nav-item.layui-this a {
-            background-color: #165DFF;
+            background-color: #6D28D9;
         }
         .layui-body {
-            background-color: #F2F3F6;
+            background-color: #F5F3FA;
         }
         .admin-content {
             padding: 20px;
         }
         .admin-card {
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.06);
             padding: 20px;
             margin-bottom: 20px;
+            transition: box-shadow 0.2s;
+        }
+        .admin-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -51,16 +57,17 @@
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <i class="fas fa-user-circle mr-2"></i>管理员
+                    <i class="fas fa-user-shield mr-2"></i>系统管理员
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="javascript:;">个人中心</a></dd>
-                    <dd><a href="javascript:;" id="logout-btn">退出登录</a></dd>
+                    <dd><a href="javascript:;">个人设置</a></dd>
+                    <dd><a href="javascript:;" id="logout-btn">安全退出</a></dd>
                 </dl>
             </li>
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <i class="fas fa-cog"></i>
+                    <i class="fas fa-bell"></i>
+                    <span class="layui-badge layui-badge-dot" style="position:absolute; top:12px; right:8px;"></span>
                 </a>
             </li>
         </ul>
@@ -70,62 +77,54 @@
             <ul class="layui-nav layui-nav-tree">
                 <li class="layui-nav-item">
                     <a href="/admin/index">
-                        <i class="fas fa-home"></i>
+                        <i class="fas fa-tachometer-alt"></i>
                         <span>系统首页</span>
                     </a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <i class="fas fa-users"></i>
-                        <span>用户管理</span>
+                        <i class="fas fa-users-cog"></i>
+                        <span>用户权限</span>
                     </a>
                     <dl class="layui-nav-child">
                         <dd><a href="/admin/users">用户列表</a></dd>
-                        <dd><a href="javascript:;">添加用户</a></dd>
-                    </dl>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">
-                        <i class="fas fa-key"></i>
-                        <span>权限管理</span>
-                    </a>
-                    <dl class="layui-nav-child">
+                        <dd><a href="/admin/roles">角色管理</a></dd>
                         <dd><a href="/admin/functions">功能管理</a></dd>
                         <dd><a href="/admin/menus">菜单管理</a></dd>
-                        <dd><a href="/admin/roles">角色管理</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <i class="fas fa-search"></i>
-                        <span>数据管理</span>
+                        <i class="fas fa-satellite-dish"></i>
+                        <span>数据采集</span>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/admin/watch">瞭望管理</a></dd>
-                        <dd><a href="/admin/data">数据管理</a></dd>
-                        <dd><a href="/admin/collection">采集管理</a></dd>
+                        <dd><a href="/admin/watch">瞭望配置</a></dd>
+                        <dd><a href="/admin/data">数据源管理</a></dd>
+                        <dd><a href="/admin/warehouse">数据仓库</a></dd>
+                        <dd><a href="/admin/collection">采集调度</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
                     <a href="javascript:;">
-                        <i class="fas fa-robot"></i>
-                        <span>AI管理</span>
+                        <i class="fas fa-brain"></i>
+                        <span>AI 引擎</span>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a href="/admin/digital_employee">数字员工</a></dd>
-                        <dd><a href="/admin/model">模型引擎</a></dd>
+                        <dd><a href="/admin/digital_employee">智能助手</a></dd>
+                        <dd><a href="/admin/model">模型管理</a></dd>
                     </dl>
                 </li>
                 <li class="layui-nav-item">
                     <a href="/admin/dashboard">
-                        <i class="fas fa-chart-bar"></i>
+                        <i class="fas fa-chart-pie"></i>
                         <span>数智大屏</span>
                     </a>
                 </li>
                 <li class="layui-nav-item">
                     <a href="/admin/sentiment">
-                        <i class="fas fa-comments"></i>
-                        <span>舆情大屏</span>
+                        <i class="fas fa-comment-dots"></i>
+                        <span>舆情分析</span>
                     </a>
                 </li>
             </ul>
@@ -141,12 +140,33 @@
     </form>
     <script src="{{ static_url('dist/layui/layui.js') }}"></script>
     <script>
+        // 全局暴露 layui 内置 jQuery 并同步注入 XSRF 拦截（所有子模板均可直接用 $）
+        window.$ = layui.$;
+        var xsrf = document.cookie.match(/_xsrf=([^;]+)/);
+        var token = xsrf ? xsrf[1] : '';
+        if(window.$.ajax){
+            var _ajax = window.$.ajax;
+            window.$.ajax = function(opts){
+                opts = opts || {};
+                if(opts.type && opts.type.toUpperCase() !== 'GET'){
+                    opts.headers = opts.headers || {};
+                    if(!opts.headers['X-Xsrftoken']){
+                        opts.headers['X-Xsrftoken'] = token;
+                    }
+                }
+                return _ajax(opts);
+            };
+        }
+        // layui 组件初始化
         layui.use(['element', 'layer'], function(){
             var element = layui.element;
-            var layer = layui.layer;
+            window.layer = layui.layer;
         });
         document.getElementById('logout-btn').addEventListener('click', function() {
-            document.getElementById('logout-form').submit();
+            window.layer.confirm('确定要退出系统吗？', {icon: 3, title:'提示'}, function(index){
+                window.layer.close(index);
+                document.getElementById('logout-form').submit();
+            });
         });
     </script>
     {% block script %}{% end %}

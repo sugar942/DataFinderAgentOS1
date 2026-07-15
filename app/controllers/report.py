@@ -7,4 +7,4 @@ class ReportHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         username = self.current_user
-        self.render("report.html", title="报表功能", username=username)
+        self.render("report.html", title="数据分析", username=username)

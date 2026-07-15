@@ -1,0 +1,532 @@
+{% extends "base.html" %}
+{% block body %}
+<style>
+    .watch-header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2b5797 100%);
+        border-radius: 12px;
+        padding: 28px 32px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+    .watch-header h3 {
+        margin: 0 0 6px 0;
+        font-size: 20px;
+        font-weight: 600;
+    }
+    .watch-header p {
+        margin: 0;
+        font-size: 13px;
+        opacity: 0.8;
+    }
+    .search-box {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+    }
+    .search-box input {
+        flex: 1;
+        height: 46px;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 8px;
+        padding: 0 16px;
+        font-size: 14px;
+        background: rgba(255,255,255,0.12);
+        color: #fff;
+        outline: none;
+    }
+    .search-box input::placeholder { color: rgba(255,255,255,0.6); }
+    .search-box input:focus {
+        border-color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.18);
+    }
+    .btn-collect {
+        height: 46px;
+        padding: 0 28px;
+        background: #fff;
+        color: #1e3a5f;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+    .btn-collect:hover { background: #e8f0fe; }
+    .btn-collect:disabled { opacity: 0.5; cursor: not-allowed; }
+    .source-panel {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .source-panel h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin: 0 0 4px 0;
+    }
+    .source-panel .panel-hint {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 14px;
+    }
+    .source-actions {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
+    .source-actions a {
+        color: #2b5797;
+        cursor: pointer;
+        text-decoration: none;
+    }
+    .source-actions a:hover { text-decoration: underline; }
+    .source-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 10px;
+    }
+    .source-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid #e8ecf1;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+    .source-item:hover { border-color: #2b5797; background: #f8fafd; }
+    .source-item.selected { border-color: #2b5797; background: #eef4fb; }
+    .source-item.disabled { opacity: 0.5; cursor: not-allowed; background: #f5f5f5; }
+    .source-item input[type="checkbox"] { accent-color: #2b5797; width: 16px; height: 16px; }
+    .source-item .src-code {
+        font-size: 11px;
+        color: #888;
+        background: #f0f0f0;
+        padding: 1px 6px;
+        border-radius: 3px;
+    }
+    .source-item .src-name { font-size: 14px; font-weight: 500; color: #333; }
+    .source-item .src-badge {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 10px;
+    }
+    .src-badge.on { background: #e8f5e9; color: #2e7d32; }
+    .src-badge.off { background: #f5f5f5; color: #999; }
+    .result-panel {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px 24px;
+        box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    }
+    .result-panel h4 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin: 0 0 16px 0;
+    }
+    .cabinet-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+    .cabinet-column {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .cabinet-card {
+        background: #fafbfc;
+        border: 1px solid #eef1f5;
+        border-radius: 10px;
+        padding: 14px 16px;
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+    }
+    .cabinet-card:hover {
+        background: #f0f4fb;
+        border-color: #2b5797;
+        box-shadow: 0 2px 12px rgba(43,87,151,0.1);
+        transform: translateY(-1px);
+    }
+    .cabinet-card .card-index {
+        position: absolute;
+        top: 6px; right: 10px;
+        font-size: 10px; color: #bbb;
+        font-weight: 600;
+    }
+    .cabinet-card .card-source {
+        font-size: 10px; font-weight: 600;
+        padding: 2px 8px; border-radius: 10px;
+        display: inline-block; margin-bottom: 8px;
+        background: #e8f0fe; color: #2b5797;
+    }
+    .cabinet-card .card-title {
+        font-size: 14px; font-weight: 600;
+        color: #1a1a2e; line-height: 1.4;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .cabinet-card .card-title a {
+        color: #1a1a2e; text-decoration: none;
+    }
+    .cabinet-card .card-title a:hover { color: #2b5797; }
+    .cabinet-card .card-summary {
+        font-size: 12px; color: #888;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+    .cabinet-card .card-time {
+        font-size: 11px; color: #bbb;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #bbb;
+        grid-column: 1/-1;
+    }
+    .empty-state i {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 12px;
+    }
+    .pagination-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f0f0f0;
+    }
+    .pagination-bar button {
+        padding: 6px 14px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fff;
+        color: #555;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    .pagination-bar button:hover { border-color: #2b5797; color: #2b5797; }
+    .pagination-bar button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pagination-bar .page-info { font-size: 13px; color: #888; margin: 0 8px; }
+    .task-status { display: inline-flex; align-items: center; gap: 6px; }
+    .status-dot {
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .status-dot.running { background: #f0ad4e; animation: pulse 1.2s infinite; }
+    .status-dot.completed { background: #5cb85c; }
+    @keyframes pulse {
+        0%,100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
+    @media (max-width: 1200px) {
+        .cabinet-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .cabinet-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="watch-header">
+    <h3>政务智能瞭望</h3>
+    <p>输入关键字，一键采集全网瞭源资讯</p>
+    <div class="search-box">
+        <input type="text" id="keyword-input" placeholder="请输入关键字，例如：四川、成都发展、乡村振兴...">
+        <button class="btn-collect" id="collect-btn" onclick="startCollect()">
+            <i class="fas fa-search"></i> 立即采集
+        </button>
+    </div>
+</div>
+
+<div class="source-panel">
+    <h4>请在下方勾选至少一个瞭源</h4>
+    <p class="panel-hint">瞭源开关仅「启用中」的瞭源可参与采集；来源于「瞭源管理」</p>
+    <div class="source-actions">
+        <a onclick="selectAll()">全选</a>
+        <a onclick="selectNone()">全不选</a>
+    </div>
+    <div class="source-grid" id="source-grid">
+        <div style="color:#999;font-size:13px;padding:12px;">加载中...</div>
+    </div>
+</div>
+
+<div class="result-panel">
+    <h4>
+        <span>采集结果</span>
+        <span id="task-status" style="margin-left:12px;font-size:13px;font-weight:400;"></span>
+        <span style="float:right;display:none;" id="result-actions">
+            <a href="javascript:;" onclick="selectAllResults()" style="margin-right:8px;font-size:12px;color:#2b5797;">全选</a>
+            <a href="javascript:;" onclick="deselectAllResults()" style="margin-right:12px;font-size:12px;color:#888;">取消全选</a>
+            <button class="btn-collect" style="height:32px;padding:0 16px;font-size:12px;background:#7C3AED;color:#fff;" onclick="saveToWarehouse()">
+                <i class="fas fa-database"></i> 保存到数据仓库
+            </button>
+        </span>
+    </h4>
+    <div id="result-area">
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>尚未开始采集</p>
+        </div>
+    </div>
+    <div class="pagination-bar" id="pagination-bar" style="display:none;">
+        <button id="prev-btn" onclick="prevPage()">&lt; 上一页</button>
+        <span class="page-info" id="page-info">第 1 页</span>
+        <button id="next-btn" onclick="nextPage()">下一页 &gt;</button>
+    </div>
+</div>
+{% end %}
+{% block script %}
+<script>
+var currentTaskId = 0;
+var currentPage = 1;
+var totalPages = 1;
+var pollingTimer = null;
+
+function loadSources(){
+    $.get('/admin/api/watch/sources', function(res){
+        var html = '';
+        if(res.code === 0 && res.data){
+            layui.each(res.data, function(i, s){
+                var cls = s.status === 1 ? '' : ' disabled';
+                var badge = s.status === 1 ? '<span class="src-badge on">启用中</span>' : '<span class="src-badge off">已停用</span>';
+                if(s.status === 1) cls += ' selected';
+                html += '<div class="source-item'+cls+'" data-id="'+s.id+'" data-status="'+s.status+'" onclick="toggleSource(this)">';
+                html += '<input type="checkbox" '+(s.status===1?'checked':'disabled')+' style="pointer-events:none;">';
+                html += '<div style="flex:1;"><div class="src-name">'+s.name+'</div>';
+                html += '<div style="margin-top:3px;"><span class="src-code">'+s.code+'</span></div></div>';
+                html += badge;
+                html += '</div>';
+            });
+        }
+        $('#source-grid').html(html || '<div style="color:#999;font-size:13px;padding:12px;">暂无瞭源，请前往瞭源管理添加</div>');
+    });
+}
+
+function toggleSource(el){
+    if($(el).data('status') !== 1) return;
+    $(el).toggleClass('selected');
+    $(el).find('input[type="checkbox"]').prop('checked', $(el).hasClass('selected'));
+}
+
+function getSelectedSources(){
+    var ids = [];
+    $('#source-grid .source-item.selected').each(function(){
+        ids.push(parseInt($(this).data('id')));
+    });
+    return ids;
+}
+
+function selectAll(){
+    $('#source-grid .source-item').each(function(){
+        if($(this).data('status') === 1){
+            $(this).addClass('selected');
+            $(this).find('input[type="checkbox"]').prop('checked', true);
+        }
+    });
+}
+
+function selectNone(){
+    $('#source-grid .source-item').removeClass('selected');
+    $('#source-grid .source-item input[type="checkbox"]').prop('checked', false);
+}
+
+function startCollect(){
+    var keyword = $('#keyword-input').val().trim();
+    if(!keyword){ layer.msg('请输入关键字'); return; }
+    var sourceIds = getSelectedSources();
+    if(sourceIds.length === 0){ layer.msg('请至少选择一个瞭源'); return; }
+
+    $('#collect-btn').prop('disabled', true).text('采集中...');
+    $('#task-status').html('<span class="task-status"><span class="status-dot running"></span> 正在采集...</span>');
+    $('#result-area').html('<div class="empty-state"><i class="fas fa-spinner fa-pulse"></i><p>正在采集「'+keyword+'」相关信息...</p></div>');
+    $('#pagination-bar').hide();
+    $('#result-actions').hide();
+
+    $.ajax({
+        url: '/admin/api/watch/tasks',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({keyword: keyword, source_ids: sourceIds}),
+        success: function(res){
+            if(res.code === 0){
+                currentTaskId = res.data.task_id;
+                currentPage = 1;
+                pollResults();
+            } else {
+                layer.msg(res.msg, {icon:2});
+                $('#collect-btn').prop('disabled', false).html('<i class="fas fa-search"></i> 立即采集');
+                $('#task-status').html('');
+            }
+        },
+        error: function(){
+            layer.msg('请求失败', {icon:2});
+            $('#collect-btn').prop('disabled', false).html('<i class="fas fa-search"></i> 立即采集');
+            $('#task-status').html('');
+        }
+    });
+}
+
+function pollResults(){
+    if(!currentTaskId) return;
+    $.get('/admin/api/watch/results', {task_id: currentTaskId, page: currentPage, limit: 36}, function(res){
+        if(res.code === 0){
+            $('#collect-btn').prop('disabled', false).html('<i class="fas fa-search"></i> 立即采集');
+            $('#task-status').html('<span class="task-status"><span class="status-dot completed"></span> 共采集到 '+res.count+' 条结果</span>');
+
+            if(res.count === 0){
+                $('#result-area').html('<div class="empty-state"><i class="fas fa-inbox"></i><p>未采集到相关结果</p></div>');
+                $('#pagination-bar').hide();
+                $('#result-actions').hide();
+            } else {
+                totalPages = Math.ceil(res.count / 36);
+                renderResults(res.data);
+                renderPagination();
+                $('#result-actions').show();
+            }
+        } else {
+            if(pollingTimer) clearTimeout(pollingTimer);
+            pollingTimer = setTimeout(pollResults, 1500);
+        }
+    }).fail(function(){
+        if(pollingTimer) clearTimeout(pollingTimer);
+        pollingTimer = setTimeout(pollResults, 1500);
+    });
+}
+
+function selectAllResults(){
+    $('.result-cb').prop('checked', true);
+}
+
+function deselectAllResults(){
+    $('.result-cb').prop('checked', false);
+}
+
+function saveToWarehouse(){
+    var selected = [];
+    $('.result-cb:checked').each(function(){
+        var $cb = $(this);
+        selected.push({
+            title: $cb.data('title'),
+            url: $cb.data('url'),
+            source_name: $cb.data('source'),
+            summary: $cb.data('summary') || ''
+        });
+    });
+    if(selected.length === 0){
+        layer.msg('请至少选择一条结果', {icon:2});
+        return;
+    }
+    layer.confirm('确定将选中的 '+selected.length+' 条数据保存到数据仓库吗？', {icon:3, title:'保存到数据仓库'}, function(index){
+        layer.close(index);
+        var keyword = $('#keyword-input').val().trim() || '';
+        $.ajax({
+            url: '/admin/api/warehouse',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                action: 'save_to_warehouse',
+                articles: selected,
+                source_name: '',
+                keyword: keyword
+            }),
+            success: function(res){
+                if(res.code === 0){
+                    layer.msg(res.msg, {icon:1});
+                } else {
+                    layer.msg(res.msg || '保存失败', {icon:2});
+                }
+            },
+            error: function(){
+                layer.msg('请求失败', {icon:2});
+            }
+        });
+    });
+}
+
+function renderResults(rows){
+    var itemsPerCol = 12;
+    var cols = [[], [], []];
+    layui.each(rows, function(i, r){
+        var idx = i % 3;
+        cols[idx].push(r);
+    });
+
+    var html = '<div class="cabinet-grid">';
+    for(var c = 0; c < 3; c++){
+        html += '<div class="cabinet-column">';
+        layui.each(cols[c], function(j, r){
+            var summary = r.summary || '';
+            if(summary.length > 80) summary = summary.substring(0, 80) + '...';
+            var time = r.collected_at || '';
+            html += '<div class="cabinet-card" style="position:relative;">';
+            html += '<div style="position:absolute;top:8px;left:10px;z-index:2;" onclick="event.stopPropagation();">';
+            html += '<input type="checkbox" class="result-cb" data-id="'+r.id+'" data-title="'+r.title.replace(/"/g,'&quot;')+'" data-url="'+r.url+'" data-source="'+r.source_name+'" data-summary="'+(r.summary||'').replace(/"/g,'&quot;')+'" style="accent-color:#7C3AED;width:15px;height:15px;cursor:pointer;">';
+            html += '</div>';
+            html += '<span class="card-index">#'+(r.id)+'</span>';
+            html += '<span class="card-source">'+r.source_name+'</span>';
+            html += '<div class="card-title"><a href="'+r.url+'" target="_blank" onclick="event.stopPropagation();">'+r.title+'</a></div>';
+            if(summary) html += '<div class="card-summary">'+summary+'</div>';
+            if(time) html += '<div class="card-time"><i class="far fa-clock"></i> '+time+'</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+    }
+    html += '</div>';
+    $('#result-area').html(html);
+}
+
+function renderPagination(){
+    $('#page-info').text('第 '+currentPage+' 页 / 共 '+totalPages+' 页');
+    $('#prev-btn').prop('disabled', currentPage <= 1);
+    $('#next-btn').prop('disabled', currentPage >= totalPages);
+    $('#pagination-bar').show();
+}
+
+function prevPage(){
+    if(currentPage <= 1) return;
+    currentPage--;
+    loadPage();
+}
+
+function nextPage(){
+    if(currentPage >= totalPages) return;
+    currentPage++;
+    loadPage();
+}
+
+function loadPage(){
+    if(!currentTaskId) return;
+    $.get('/admin/api/watch/results', {task_id: currentTaskId, page: currentPage, limit: 36}, function(res){
+        if(res.code === 0){
+            totalPages = Math.ceil(res.count / 36);
+            renderResults(res.data);
+            renderPagination();
+            $('#result-actions').show();
+        }
+    });
+}
+
+layui.use(['element', 'layer'], function(){
+    var layer = layui.layer;
+    window.layer = layer;
+    loadSources();
+});
+</script>
+{% end %}

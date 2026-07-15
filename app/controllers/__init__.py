@@ -1,6 +1,6 @@
 """
-controllers包：属于controllers层（Tornado RequestHandler）
+controllers 包 —— 控制器层（Tornado RequestHandler 实现）
 约定：
-- 一个业务模块一个文件（auth.py 、 home.py......）
--Handler负责接收请求、校验数据、校验参数、调用Model、渲染View
+- 一个业务模块对应一个 .py 文件（auth、home、admin...）
+- Handler 职责：接收请求 → 校验参数 → 调用 Model → 渲染 View
 """

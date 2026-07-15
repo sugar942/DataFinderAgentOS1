@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="{{ static_url('css/chat.css') }}">
+{% end %}
+
+{% block body %}
+<div class="chat-container">
+
+    <!-- ===== 左侧边栏 ===== -->
+    <aside class="chat-sidebar">
+
+        <!-- A区: Logo + 系统标题 -->
+        <div class="chat-sidebar-header">
+            <div class="logo-icon">
+                <i class="fas fa-binoculars"></i>
+            </div>
+            <div class="logo-text">
+                <h3>智能瞭望与问数系统</h3>
+                <span>DataFinder Agent OS</span>
+            </div>
+        </div>
+
+        <!-- B区: 模型切换 -->
+        <div class="chat-model-switch">
+            <select id="modelSelect">
+                <option value="">加载中...</option>
+            </select>
+        </div>
+
+        <!-- 新建对话按钮 -->
+        <button id="newChatBtn" class="chat-new-btn">
+            <i class="fas fa-plus"></i> 新对话
+        </button>
+
+        <!-- C区: 对话列表 -->
+        <div class="chat-conv-list" id="convList">
+        </div>
+
+        <!-- 侧边栏底部：用户信息 -->
+        <div class="chat-sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span id="chatUsername">{{ username }}</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" title="退出登录">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== 右侧主区域 ===== -->
+    <main class="chat-main">
+
+        <!-- 顶部栏 -->
+        <div class="chat-main-header">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="current-model">
+                <i class="fas fa-brain" style="color:#7C3AED;"></i>
+                <span id="currentModelBadge">未选择模型</span>
+                <span class="badge">当前模型</span>
+            </div>
+            <div></div>
+        </div>
+
+        <!-- D区: 对话消息区 -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h3>开始新的对话</h3>
+                <p style="color:#ccc;font-size:13px;margin-top:4px;">输入 @ 调度数字员工，输入 / 使用快捷功能</p>
+            </div>
+        </div>
+
+        <!-- E区: 输入区 -->
+        <div class="chat-input-area">
+            <div style="position:relative;">
+                <div class="mention-dropdown" id="mentionDropdown"></div>
+                <div class="chat-input-wrapper">
+                    <textarea id="chatInput" rows="1" placeholder="输入消息... 输入 @ 调度数字员工，输入 / 快捷功能" autofocus></textarea>
+                    <button id="sendBtn" class="chat-send-btn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+{% module xsrf_form_html() %}
+{% end %}
+
+{% block scripts %}
+<script src="{{ static_url('js/chat.js') }}"></script>
+{% end %}

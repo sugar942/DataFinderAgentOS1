@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="admin-card">
+    <div class="layui-row" style="margin-bottom: 16px;">
+        <div class="layui-col-md12" style="text-align: right;">
+            <button class="layui-btn" id="add-btn" style="background:#7C3AED;border-color:#7C3AED;">
+                <i class="fas fa-plus"></i> 新增菜单
+            </button>
+        </div>
+    </div>
+    <table id="menu-table" lay-filter="menuTable"></table>
+</div>
+
+<div id="menu-form-dialog" style="display:none;padding:20px;">
+    <form class="layui-form" id="menu-form" lay-filter="menuForm">
+        <input type="hidden" name="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">菜单名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入菜单名称" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">图标类名</label>
+            <div class="layui-input-block">
+                <input type="text" name="icon" placeholder="如 fas fa-users" class="layui-input">
+                <div class="layui-form-mid layui-word-aux">Font Awesome 图标类名</div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">URL 路径</label>
+            <div class="layui-input-block">
+                <input type="text" name="url" placeholder="/admin/users" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">父级菜单</label>
+            <div class="layui-input-block">
+                <select name="parent_id" lay-search>
+                    <option value="0">顶级菜单</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">排序</label>
+            <div class="layui-input-block">
+                <input type="number" name="sort" value="0" class="layui-input" style="width:100px;">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" lay-skin="switch" lay-text="启用|禁用" value="1" checked>
+            </div>
+        </div>
+    </form>
+</div>
+{% end %}
+{% block script %}
+<script>
+layui.use(['table', 'form', 'layer'], function(){
+    var table = layui.table;
+    var form = layui.form;
+    var layer = layui.layer;
+    var $ = layui.$;
+
+    var allMenus = [];
+
+    function actionTpl(d){
+        return '<button class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="fas fa-edit"></i> 编辑</button> ' +
+               '<button class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete"><i class="fas fa-trash"></i> 删除</button>';
+    }
+
+    function statusTpl(d){
+        return d.status === 1 ? '<span class="layui-badge layui-bg-green">启用</span>' : '<span class="layui-badge" style="background:#aaa;">禁用</span>';
+    }
+
+    function loadAllMenus(cb){
+        $.get('/admin/api/menus', function(res){
+            if(res.code === 0){
+                allMenus = res.data || [];
+                var opts = '<option value="0">顶级菜单</option>';
+                layui.each(allMenus, function(i, m){
+                    var prefix = m.parent_id === 0 ? '' : '&nbsp;&nbsp;|- ';
+                    opts += '<option value="'+m.id+'">'+prefix+m.name+'</option>';
+                });
+                $('select[name="parent_id"]').html(opts);
+                form.render('select');
+            }
+            if(cb) cb();
+        });
+    }
+
+    loadAllMenus();
+
+    table.render({
+        elem: '#menu-table',
+        url: '/admin/api/menus',
+        page: false,
+        cols: [[
+            {field:'id', title:'ID', width:60},
+            {field:'name', title:'菜单名称', width:150},
+            {field:'icon', title:'图标', width:160},
+            {field:'url', title:'URL', width:200},
+            {field:'sort', title:'排序', width:70},
+            {field:'status', title:'状态', width:90, templet: statusTpl},
+            {title:'操作', width:180, templet: actionTpl, align:'center', fixed:'right'}
+        ]],
+        defaultToolbar: [],
+        parseData: function(res){ return {code:res.code, msg:res.msg, data:res.data}; }
+    });
+
+    $('#add-btn').click(function(){
+        loadAllMenus(function(){
+            $('#menu-form')[0].reset();
+            $('#menu-form input[name="id"]').val('');
+            form.val('menuForm', {parent_id:'0', sort:0, status:1});
+            layer.open({
+                type:1, title:'新增菜单', area:['500px','450px'], content:$('#menu-form-dialog'),
+                btn:['保存','取消'],
+                yes:function(index){
+                    var fdata = form.val('menuForm');
+                    if(!fdata.name){ layer.msg('请输入菜单名称'); return; }
+                    fdata.parent_id = parseInt(fdata.parent_id) || 0;
+                    fdata.sort = parseInt(fdata.sort) || 0;
+                    fdata.status = fdata.status ? 1 : 0;
+                    $.ajax({
+                        url:'/admin/api/menus', type:'POST', contentType:'application/json',
+                        data:JSON.stringify(fdata),
+                        success:function(res){
+                            if(res.code===0){ layer.close(index); loadAllMenus(); table.reload('menu-table'); layer.msg('新增成功',{icon:1}); }
+                            else { layer.msg(res.msg,{icon:2}); }
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    table.on('tool(menuTable)', function(obj){
+        var d = obj.data;
+        if(obj.event === 'edit'){
+            loadAllMenus(function(){
+                form.val('menuForm', {
+                    id:d.id, name:d.name, icon:d.icon, url:d.url,
+                    parent_id:String(d.parent_id), sort:d.sort, status:d.status
+                });
+                layer.open({
+                    type:1, title:'编辑菜单', area:['500px','450px'], content:$('#menu-form-dialog'),
+                    btn:['保存','取消'],
+                    yes:function(index){
+                        var fdata = form.val('menuForm');
+                        fdata.parent_id = parseInt(fdata.parent_id) || 0;
+                        fdata.sort = parseInt(fdata.sort) || 0;
+                        fdata.status = fdata.status ? 1 : 0;
+                        $.ajax({
+                            url:'/admin/api/menus', type:'PUT', contentType:'application/json',
+                            data:JSON.stringify(fdata),
+                            success:function(res){
+                                if(res.code===0){ layer.close(index); loadAllMenus(); table.reload('menu-table'); layer.msg('更新成功',{icon:1}); }
+                                else { layer.msg(res.msg,{icon:2}); }
+                            }
+                        });
+                    }
+                });
+            });
+        } else if(obj.event === 'delete'){
+            layer.confirm('确定删除菜单 "'+d.name+'" 吗？', {icon:3}, function(index){
+                layer.close(index);
+                $.ajax({
+                    url:'/admin/api/menus', type:'DELETE', contentType:'application/json',
+                    data:JSON.stringify({id:d.id}),
+                    success:function(res){
+                        if(res.code===0){ loadAllMenus(); table.reload('menu-table'); layer.msg('删除成功',{icon:1}); }
+                        else { layer.msg(res.msg,{icon:2}); }
+                    }
+                });
+            });
+        }
+    });
+});
+</script>
+{% end %}
