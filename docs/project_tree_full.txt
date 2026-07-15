@@ -1,0 +1,94 @@
+Project: DataFinderAgentOS (智能瞭望与问数系统)
+=====================================================
+
+Project Root
+|
+|   app.py                      # 应用入口：路由注册 + 服务启动
+|
++---app/                        # MVC 业务代码主目录
+|   |   __init__.py             # Python 包标识
+|   |
+|   +---controllers/            # 控制器层（Tornado RequestHandler）
+|   |   |   __init__.py         # 包说明
+|   |   |   base.py             # 公共基类：统一登录态校验
+|   |   |   auth.py             # 前台认证：LoginHandler / LogoutHandler / RegisterHandler
+|   |   |   home.py             # 前台首页：IndexHandler
+|   |   |   chat.py             # 智能问数：ChatHandler + ChatWebSocketHandler
+|   |   |   report.py           # 数据分析：ReportHandler
+|   |   |   history.py          # 查询历史：HistoryHandler
+|   |   |   export.py           # 报告导出：ExportHandler
+|   |   |   admin.py            # 后台管理：AdminLoginHandler / AdminLogoutHandler / AdminIndexHandler ...
+|   |
+|   +---models/                 # 模型层（数据访问 + 业务逻辑）
+|   |   |   __init__.py         # 包说明
+|   |   |   db.py               # 数据库基础设施：连接管理 / 建表 / 初始数据（含瞭源种子数据）
+|   |   |   user.py             # 用户数据操作：UserRepository
+|   |   |   admin.py            # 管理员数据操作：AdminRepository
+|   |   |   function.py         # 功能权限数据操作：FunctionRepository
+|   |   |   menu.py             # 菜单数据操作：MenuRepository
+|   |   |   role.py             # 角色权限数据操作：RoleRepository
+|   |   |   watch.py            # 瞭望采集：WatchRepository + WatchCollector
+|   |   |   model.py            # AI模型引擎：AIModelRepository + AIModelService
+|   |   |   warehouse.py        # 数据仓库：DataWarehouseRepository
+|   |   |   operation_log.py    # 操作日志：OperationLogRepository
+|   |
+|   +---static/                 # 静态资源目录
+|   |   +---css/
+|   |   |       base.css        # 全局自定义样式（后台布局、卡片、响应式）
+|   |   +---js/
+|   |   |       base.js         # 全局脚本
+|   |   +---dist/               # 第三方 UI 框架（本地化离线引用）
+|   |       +---bootstrap/
+|   |       |   +---css/        # Bootstrap 5 CSS 文件
+|   |       |   +---js/         # Bootstrap 5 JS 文件
+|   |       +---layui/
+|   |           +---css/        # layui CSS
+|   |           +---font/       # layui 字体图标
+|   |           |       layui.js  # layui 核心 JS
+|   |
+|   +---templates/              # 模板视图目录
+|           base.html           # 前台基础模板（所有用户端页面继承）
+|           login.html          # 用户登录页面
+|           index.html          # 用户首页（功能导航卡片）
+|           register.html       # 用户注册页面
+|           chat.html           # 智能问数对话页面（待添加）
+|           report.html         # 数据分析页面（待添加）
+|           history.html        # 查询历史页面（待添加）
+|           +---admin/          # 后台管理模板子目录
+|                   base.html         # 后台基础布局（顶部导航 + 左侧菜单 + 右侧内容区）
+|                   login.html        # 管理员登录页面
+|                   index.html        # 后台管理首页（统计卡片 + 趋势图 + 操作日志）
+|                   users.html        # 用户管理（表格 + 新增/编辑弹窗 + RBAC角色分配）
+|                   roles.html        # 角色管理（表格 + 新增/编辑弹窗 + 菜单/功能权限树）
+|                   functions.html    # 功能权限管理（表格 + 新增/编辑弹窗）
+|                   menus.html        # 菜单配置管理（表格 + 新增/编辑弹窗 + 树形结构）
+|                   watch.html        # 瞭望采集（A区搜索 + B区瞭源选择 + C区橱窗结果）
+|                   data.html         # 瞭源管理（表格 + 新增/编辑弹窗 + RequestHeaders/Params配置）
+|                   model.html        # AI模型引擎（沉浸式暗色主题 + 模型卡片网格 + SSE流式测试）
+|                   warehouse.html    # 数据仓库（表格列表 + 查看/删除/深度采集标识 + 悬浮窗预留）
+|                   collection.html   # 采集调度（待开发）
+|                   digital_employee.html # 智能助手配置（待开发）
+|                   dashboard.html    # 数智大屏（待开发）
+|                   sentiment.html    # 舆情分析（待开发）
+|
++---config/                     # 系统配置目录
+|       app.yaml                # 应用参数：端口、调试模式、会话密钥
+|       database.yaml           # 数据库参数：类型、路径、连接设置
+|       llm.yaml                # 大模型参数：API Key 引用、模型选择
+|       security.yaml           # 安全参数：密码策略、会话管理、限流规则、安全响应头
+|
++---database/                   # 数据库文件存放目录
+|
++---docs/                       # 项目文档目录
+|       codingprompt.txt        # 开发任务提示词
+|       constraint.md           # 技术约束与限制文档
+|       requirement.md          # 需求规格与跟踪文档
+|       role.md                 # 系统角色定义文档
+|       template.md             # 代码模板与规范文档
+|       test_case.md            # 测试用例文档
+|       project_tree.txt        # 项目目录结构（简要版）
+|       project_tree_full.txt   # 项目目录结构（完整注释版）
+|
++---temp/                       # 临时参考文件（如界面设计稿）
++---test/                       # 测试代码目录
++---venv/                       # Python 虚拟环境（venv）

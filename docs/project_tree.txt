@@ -1,0 +1,50 @@
+Project: DataFinderAgentOS
+|   app.py                 # 应用入口，路由注册
+|
++---app                    # MVC 业务代码
+|   +---controllers        # 控制器层（Tornado Handler）
+|   |       auth.py        # 用户认证（登录/注册/登出）
+|   |       base.py        # 公共基类 Handler
+|   |       home.py        # 用户首页
+|   |       chat.py        # 智能问数（含 WebSocket）
+|   |       report.py      # 数据分析报表
+|   |       history.py     # 查询历史
+|   |       export.py      # 报告导出
+|   |       admin.py       # 后台管理全模块
+|   |       __init__.py
+|   |
+|   +---models             # 数据模型层
+|   |       db.py          # 数据库连接、建表、初始化
+|   |       user.py        # 用户数据访问
+|   |       admin.py       # 管理员数据访问
+|   |       __init__.py
+|   |
+|   +---static             # 静态资源
+|   |   +---css
+|   |   |       base.css   # 自定义样式
+|   |   +---js
+|   |   |       base.js    # 自定义脚本
+|   |   +---dist           # 第三方框架
+|   |       +---bootstrap  # Bootstrap 5
+|   |       +---layui      # layui
+|   |
+|   +---templates          # HTML 模板
+|   |       base.html      # 前台基础布局
+|   |       login.html     # 用户登录页
+|   |       index.html     # 用户首页
+|   |       register.html  # 用户注册页
+|   |       +---admin      # 后台模板
+|   |               base.html     # 后台基础布局
+|   |               login.html    # 管理员登录页
+|   |               index.html    # 后台管理首页
+|
++---config                 # 配置文件
+|       app.yaml           # 应用配置
+|       database.yaml      # 数据库配置
+|       llm.yaml           # 大模型配置
+|       security.yaml      # 安全配置
+|
++---database               # SQLite 数据库文件
++---docs                   # 项目文档
++---test                   # 测试目录
++---venv                   # Python 虚拟环境

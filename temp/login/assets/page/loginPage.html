@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh-CN" id="6768">
+ <head id="9207"> 
+  <meta charset="UTF-8" id="7186"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" id="6825"> 
+  <title id="6850">智能瞭望与智能问数系统</title> 
+  <script src="./loginPage/resource_178110000.js" id="5149"></script> 
+  <link href="./loginPage/all.min.css" rel="stylesheet" id="1067"> 
+  <script id="5398">
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#0E42D2',
+                        dark: '#1D2129',
+                        'gray-text': '#4E5969',
+                        'light-gray': '#C9CDD4',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        };
+    </script> 
+  <style id="6140">
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            min-height: 100%;
+        }
+        .login-card {
+            box-shadow: 0 8px 30px rgba(22, 93, 255, 0.08);
+        }
+        .input-focus:focus {
+            border-color: #165DFF;
+            box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+        }
+        .modal-mask.hidden {
+            display: none;
+        }
+    </style> 
+  <style>
+            /* 新增动画定义 */
+            @keyframes yt_modalFadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+</style> 
+ </head> 
+ <body class="w-full" id="7164"> 
+  <!-- 主容器 --> 
+  <div class="w-full min-h-screen flex flex-col" id="1805"> 
+   <!-- 顶部装饰区域 --> 
+   <div class="w-full flex-1 flex flex-col lg:flex-row" id="2957"> 
+    <!-- 左侧品牌区域 --> 
+    <div class="w-full lg:w-1/2 bg-gradient-to-br from-primary to-secondary p-8 lg:p-16 flex flex-col justify-center items-center text-white" id="9477"> 
+     <div class="w-full max-w-lg flex flex-col gap-8" id="6607"> 
+      <div class="flex items-center gap-4" id="6327"> 
+       <div class="w-16 h-16 bg-white/20 rounded-xl flex justify-center items-center" id="6171"> 
+        <i class="fas fa-binoculars text-3xl" id="6433"></i> 
+       </div> 
+       <div class="flex flex-col gap-2" id="7856"> 
+        <h1 class="text-[clamp(1.8rem,4vw,2.8rem)] font-bold leading-tight" id="4571">智能瞭望与智能问数系统</h1> 
+        <p class="text-white/80 text-lg" id="8647">企业级智能数据分析平台</p> 
+       </div> 
+      </div> 
+      <div class="w-full h-64 rounded-2xl overflow-hidden" id="1884"> 
+       <img src="./loginPage/543f0e34f36841d46ca8096a5cd002cf.png" alt="系统展示图" class="w-full h-full object-cover" id="5165"> 
+      </div> 
+      <div class="flex flex-col gap-4" id="5493"> 
+       <div class="flex items-center gap-3" id="6137"> 
+        <div class="w-10 h-10 bg-white/20 rounded-full flex justify-center items-center" id="3225"> 
+         <i class="fas fa-shield-alt" id="9020"></i> 
+        </div> 
+        <span class="text-lg" id="5898">安全可靠的企业级数据防护</span> 
+       </div> 
+       <div class="flex items-center gap-3" id="1499"> 
+        <div class="w-10 h-10 bg-white/20 rounded-full flex justify-center items-center" id="2770"> 
+         <i class="fas fa-chart-line" id="4010"></i> 
+        </div> 
+        <span class="text-lg" id="3982">全方位智能数据洞察分析</span> 
+       </div> 
+       <div class="flex items-center gap-3" id="9213"> 
+        <div class="w-10 h-10 bg-white/20 rounded-full flex justify-center items-center" id="3348"> 
+         <i class="fas fa-brain" id="7637"></i> 
+        </div> 
+        <span class="text-lg" id="3122">AI驱动的自然语言问数能力</span> 
+       </div> 
+      </div> 
+     </div> 
+    </div> 
+    <!-- 右侧登录表单区域 --> 
+    <div class="w-full lg:w-1/2 flex justify-center items-center p-6 lg:p-12" id="2963"> 
+     <div class="w-full max-w-md bg-white rounded-2xl login-card p-8 lg:p-12 flex flex-col gap-8" id="4207"> 
+      <div class="flex flex-col gap-3" id="8791"> 
+       <h2 class="text-2xl font-bold text-dark" id="1292">账号登录</h2> 
+       <p class="text-gray-text" id="8972">请输入您的账号信息登录系统</p> 
+      </div> 
+      <form class="flex flex-col gap-6" id="7151"> 
+       <div class="flex flex-col gap-3" id="7867"> 
+        <label class="text-dark font-medium" id="1455">用户名</label> 
+        <div class="relative" id="7303"> 
+         <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-light-gray" id="6238"></i> 
+         <input id="username" type="text" placeholder="请输入用户名" class="w-full h-12 pl-11 pr-4 border border-light-gray rounded-lg outline-none input-focus transition-all duration-200"> 
+        </div> 
+       </div> 
+       <div class="flex flex-col gap-3" id="1589"> 
+        <label class="text-dark font-medium" id="9429">密码</label> 
+        <div class="relative" id="6319"> 
+         <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-light-gray" id="2464"></i> 
+         <input id="password" type="password" placeholder="请输入密码" class="w-full h-12 pl-11 pr-12 border border-light-gray rounded-lg outline-none input-focus transition-all duration-200"> 
+         <button type="button" id="togglePassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-light-gray hover:text-gray-text transition-colors"> <i class="fas fa-eye-slash" id="3700"></i> </button> 
+        </div> 
+       </div> 
+       <div class="flex justify-between items-center" id="5997"> 
+        <label class="flex items-center gap-2 cursor-pointer" id="9840"> <input type="checkbox" class="w-4 h-4 accent-primary" id="4628"> <span class="text-gray-text text-sm" id="5555">记住账号</span> </label> 
+        <a href="javascript:void(0);" class="text-primary text-sm hover:text-secondary transition-colors" id="7512">忘记密码？</a> 
+       </div> 
+       <button type="button" id="loginBtn" class="w-full h-12 bg-primary hover:bg-secondary text-white font-medium rounded-lg transition-all duration-200 flex justify-center items-center gap-2"> <i class="fas fa-sign-in-alt" id="5318"></i> <span id="8947">登录系统</span> </button> 
+      </form> 
+      <div class="w-full flex justify-center" id="4555"> 
+       <p class="text-light-gray text-sm" id="5830">© 2025 智能瞭望与智能问数系统 版权所有</p> 
+      </div> 
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <!-- 登录提示弹窗蒙版 --> 
+  <div id="loginModalMask" class="modal-mask hidden fixed inset-0 bg-black/50 flex justify-center items-center z-50 p-4"> 
+   <div id="loginModal" class="w-full max-w-sm bg-white rounded-xl p-6 flex flex-col gap-6"> 
+    <div class="flex justify-center" id="7529"> 
+     <div id="modalIcon" class="w-16 h-16 rounded-full flex justify-center items-center bg-green-100 text-green-500"> 
+      <i class="fas fa-check-circle text-3xl" id="3066"></i> 
+     </div> 
+    </div> 
+    <div class="flex flex-col gap-2 text-center" id="8090"> 
+     <h3 id="modalTitle" class="text-xl font-bold text-dark">登录成功</h3> 
+     <p id="modalDesc" class="text-gray-text">欢迎使用智能瞭望与智能问数系统</p> 
+    </div> 
+    <button type="button" id="closeModalBtn" class="w-full h-11 bg-primary text-white rounded-lg hover:bg-secondary transition-colors"> 确定 </button> 
+   </div> 
+  </div> 
+  <script id="togglePassword">
+    function togglePassword(event) {
+        const passwordInput = document.getElementById('password');
+        const icon = event.currentTarget.querySelector('i');
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            passwordInput.type = 'password';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    }
+    </script> 
+  <script id="handleLogin">
+    function handleLogin(event) {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDesc = document.getElementById('modalDesc');
+        
+        if (!username || !password) {
+            modalIcon.className = 'w-16 h-16 rounded-full flex justify-center items-center bg-red-100 text-red-500';
+            modalIcon.innerHTML = '<i class="fas fa-exclamation-circle text-3xl"></i>';
+            modalTitle.textContent = '登录失败';
+            modalDesc.textContent = '用户名和密码不能为空';
+        } else {
+            modalIcon.className = 'w-16 h-16 rounded-full flex justify-center items-center bg-green-100 text-green-500';
+            modalIcon.innerHTML = '<i class="fas fa-check-circle text-3xl"></i>';
+            modalTitle.textContent = '登录成功';
+            modalDesc.textContent = '欢迎使用智能瞭望与智能问数系统';
+        }
+        document.getElementById('loginModalMask').classList.remove('hidden');
+    }
+    </script> 
+  <script>
+var pageUuid = "";
+        window.ytHandles = {
+        //关闭id为targetId的目标容器
+        hide: function(targetId) {
+            const modal = document.getElementById(targetId);//获取targetId的元素
+            // 检查targetId元素是否存在
+            if (!modal) {console.error('Modal element not found: targetId');return;}
+            //1. 准备隐藏前先清理旧动画和监听器
+            if (modal._hideTimeout) clearTimeout(modal._hideTimeout);
+            if (modal._showAnimationEndHandler) {
+                modal.removeEventListener("animationend", modal._showAnimationEndHandler);
+                delete modal._showAnimationEndHandler;
+            }
+            modal.style.animation = "";
+            // 2. 强制重绘以确保样式应用
+            void modal.offsetHeight;
+            // 3. 启动淡出动画
+            modal.style.animation = 'yt_modalFadeOut 0.3s ease-out';
+            let animationCompleted = false;
+            const onAnimationEnd = function () {
+              if (animationCompleted) return;
+              animationCompleted = true;
+              // 4. 动画结束后，添加隐藏类并清空所有内联干扰样式
+              modal.classList.add("hidden");
+              modal.style.display = "";
+              modal.style.visibility = "";
+              modal.style.opacity = "";
+              modal.style.animation = "";
+              modal.style.transform = "";
+              // 清理引用
+              delete modal._hideAnimationEndHandler;
+              if (modal._hideTimeout) {
+                clearTimeout(modal._hideTimeout);
+                delete modal._hideTimeout;
+              }
+            };
+            // 5. 使用事件监听 + 定时器双重保险，确保清理逻辑一定会执行
+            modal._hideAnimationEndHandler = onAnimationEnd;
+            modal.addEventListener("animationend", onAnimationEnd, { once: true });
+            modal._hideTimeout = setTimeout(onAnimationEnd, 400); // 略长于动画时间
+        }
+        };
+window.onload = function(){
+        try {
+          //为#togglePassword元素添加点击事件监听器
+          document.getElementById('togglePassword').addEventListener('click',function(event){
+             togglePassword(event);
+          })
+        } catch (e) {
+          console.error('JsHandle error:', e);
+        }
+        try {
+          //为#loginBtn元素添加点击事件监听器
+          document.getElementById('loginBtn').addEventListener('click',function(event){
+             handleLogin(event);
+          })
+        } catch (e) {
+          console.error('JsHandle error:', e);
+        }
+        try {
+          //为#closeModalBtn元素添加点击事件监听器
+          document.getElementById('closeModalBtn').addEventListener('click',function(event){
+             ytHandles.hide('loginModalMask');
+          })
+        } catch (e) {
+          console.error('CloseModal error:', e);
+        }
+};
+</script>  
+ </body>
+</html>
